@@ -1054,6 +1054,9 @@ const UIController = {
     form.querySelectorAll(".is-invalid").forEach(function(el) {
       el.classList.remove("is-invalid");
     });
+    // Hide the custom category input row if it was open
+    const customRow = document.getElementById("customCategoryRow");
+    if (customRow) customRow.style.display = "none";
     // Re-focus description
     const descInput = form.querySelector('[name="description"]');
     if (descInput) descInput.focus();
@@ -1382,6 +1385,9 @@ function initApp() {
 
     // Hide the input row
     if (customCategoryRow) customCategoryRow.style.display = "none";
+
+    // Re-render everything so budget panel & charts reflect the new category
+    renderAll();
   }
 
   if (btnAddCategory) {
@@ -1501,7 +1507,8 @@ function initApp() {
     UIController.populateMonthFilter(monthSelect, AppState.transactions);
     monthSelect.value = AppState.activeMonth;
     UIController.clearTransactionForm(form);
-    // Re-apply the date default after form reset
+    // Re-populate category select (form.reset() clears it) and re-apply date default
+    UIController.populateCategorySelect(categorySelect, "expense");
     if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
 
     renderAll();
