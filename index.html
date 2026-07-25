@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense &amp; Budget Visualizer</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="app-header">
+    <h1 class="app-title">Expense &amp; Budget Visualizer</h1>
+    <span class="active-month-label"></span>
+  </header>
+
+  <main class="app-layout">
+
+    <!-- Left Panel -->
+    <section class="panel-left">
+
+      <!-- Transaction Form -->
+      <div class="transaction-form">
+        <h2 class="panel-heading">Tambah Transaksi</h2>
+        <form id="transactionForm" novalidate>
+
+          <div class="form-group">
+            <label for="txDescription">Deskripsi</label>
+            <input
+              type="text"
+              id="txDescription"
+              name="description"
+              maxlength="100"
+              placeholder="Contoh: Makan siang"
+              autocomplete="off"
+            />
+            <span class="field-error" id="errorDescription"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="txAmount">Jumlah (Rp)</label>
+            <input
+              type="number"
+              id="txAmount"
+              name="amount"
+              min="0"
+              step="any"
+              placeholder="0"
+            />
+            <span class="field-error" id="errorAmount"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="txType">Tipe</label>
+            <select id="txType" name="type">
+              <option value="expense">Pengeluaran</option>
+              <option value="income">Pendapatan</option>
+            </select>
+            <span class="field-error" id="errorType"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="txCategory">Kategori</label>
+            <select id="txCategory" name="category">
+              <!-- Populated by UIController.populateCategorySelect() -->
+            </select>
+            <span class="field-error" id="errorCategory"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="txDate">Tanggal</label>
+            <input type="date" id="txDate" name="date" />
+            <span class="field-error" id="errorDate"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Tambah Transaksi</button>
+
+        </form>
+      </div>
+
+      <!-- Month Filter -->
+      <div class="month-filter">
+        <label for="monthSelect" class="filter-label">Tampilkan Bulan:</label>
+        <select id="monthSelect" class="month-select">
+          <!-- Populated by UIController.populateMonthFilter() -->
+        </select>
+      </div>
+
+      <!-- Transaction List -->
+      <div class="transaction-list">
+        <h2 class="panel-heading">Daftar Transaksi</h2>
+        <div id="transactionListContainer" class="transaction-list-container">
+          <!-- Populated by UIController.renderTransactionList() -->
+        </div>
+      </div>
+
+      <!-- Budget Panel -->
+      <div class="budget-panel">
+        <h2 class="panel-heading">Anggaran per Kategori</h2>
+        <div id="budgetPanelContainer" class="budget-panel-container">
+          <!-- Populated by UIController.renderBudgetPanel() -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Right Panel -->
+    <section class="panel-right">
+
+      <!-- Pie Chart -->
+      <div class="chart-pie">
+        <h2 class="panel-heading">Pengeluaran per Kategori</h2>
+        <canvas id="pieChart"></canvas>
+        <div id="pieLegend" class="chart-legend"></div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="chart-bar">
+        <h2 class="panel-heading">Anggaran vs Aktual (6 Bulan)</h2>
+        <canvas id="barChart"></canvas>
+      </div>
+
+      <!-- Progress Bars -->
+      <div class="chart-progress">
+        <h2 class="panel-heading">Progres Anggaran</h2>
+        <div id="progressBars">
+          <!-- Populated by UIController.renderProgressBars() -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Storage error notification (hidden by default) -->
+  <div id="storageError" class="storage-error" role="alert" aria-live="polite"></div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

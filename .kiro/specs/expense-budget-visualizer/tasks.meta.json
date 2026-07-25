@@ -1,0 +1,506 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Set up project file structure and constants": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900146965
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900173624
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900421640
+      }
+    ],
+    "2.1 Implement LocalStorage read/write helpers": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900147772
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900428256
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900629445
+      }
+    ],
+    "2.2 Implement transaction CRUD": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900148485
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900648933
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900763850
+      }
+    ],
+    "2.3 Write property test for DataStore round-trip (Property 2)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900148849
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900784806
+      }
+    ],
+    "2.4 Implement budget CRUD": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900149080
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900655105
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900770967
+      }
+    ],
+    "2.5 Write property test for budget upsert idempotence (Property 4)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900149353
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900790755
+      }
+    ],
+    "2.6 Write property test for delete completeness (Property 5)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900149631
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900798349
+      }
+    ],
+    "2.7 Write property test for unique IDs (Property 9)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900149962
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900804281
+      }
+    ],
+    "3.1 Implement `validateTransaction(formData)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900150181
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900434426
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900636334
+      }
+    ],
+    "3.2 Implement `validateBudget(amount)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900150432
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900441754
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900642551
+      }
+    ],
+    "3.3 Write property test for validation rejection of invalid inputs (Property 6)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900150679
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901353075
+      }
+    ],
+    "4. Checkpoint — Core data layer": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900150926
+      }
+    ],
+    "5.1 Implement `getMonthKey(isoDateString)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900151142
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900661153
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900777714
+      }
+    ],
+    "5.2 Implement `aggregateMonth(transactions, monthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900151340
+      },
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900811148
+      }
+    ],
+    "5.3 Write property test for aggregation consistency (Property 1)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900151528
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901355018
+      }
+    ],
+    "5.4 Implement `getTransactionsForMonth(transactions, monthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900151776
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901088269
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901337548
+      }
+    ],
+    "5.5 Write property test for month filter exclusivity (Property 3)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900151985
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901355286
+      }
+    ],
+    "5.6 Implement `getLast6Months(activeMonthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900152269
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901089077
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901338324
+      }
+    ],
+    "5.7 Write property test for six-month window (Property 10)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900152534
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901355695
+      }
+    ],
+    "5.8 Implement `buildBudgetComparisons(budgets, summary, monthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900152979
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901090008
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901339244
+      }
+    ],
+    "5.9 Write property test for budget percentage invariant (Property 7)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900153237
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901356476
+      }
+    ],
+    "6.1 Implement `resizeCanvas(canvas)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900153436
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901357178
+      }
+    ],
+    "6.2 Implement `drawEmptyState(ctx, canvas, message)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900153629
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901358068
+      }
+    ],
+    "6.3 Implement `drawYAxis(ctx, padding, chartHeight, maxValue)` and `drawXAxisLabels(ctx, padding, chartWidth, chartHeight, months)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900153828
+      },
+      {
+        "executionId": "bf534ca8-d9da-4bb8-92eb-815020c72e1c",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784901359021
+      }
+    ],
+    "7.1 Implement `renderPieChart(canvas, monthSummary)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900154064
+      }
+    ],
+    "7.2 Implement `drawPieLegend(ctx, canvas, monthSummary, totalExpense)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900154445
+      }
+    ],
+    "8.1 Implement `renderBarChart(canvas, store, activeMonthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900154673
+      }
+    ],
+    "8.2 Implement `drawBarLegend(ctx, canvas, padding)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900154889
+      }
+    ],
+    "9.1 Implement `renderProgressBars(container, comparisons)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900155186
+      }
+    ],
+    "9.2 Write property test for progress bar color thresholds (Property 11)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900155586
+      }
+    ],
+    "10.1 Implement `renderTransactionList(container, transactions, monthKey)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900155797
+      }
+    ],
+    "10.2 Implement `clearTransactionForm(form)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900156041
+      }
+    ],
+    "10.3 Implement `populateCategorySelect(selectElement)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900156309
+      }
+    ],
+    "10.4 Implement form submit handler": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900156547
+      }
+    ],
+    "10.5 Implement delete transaction handler (event delegation on transaction list)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900156770
+      }
+    ],
+    "11.1 Implement `populateMonthFilter(selectElement, transactions)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900156961
+      }
+    ],
+    "11.2 Implement month filter change handler": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900157257
+      }
+    ],
+    "11.3 Implement `renderBudgetPanel(container, budgets, activeMonth)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900157512
+      }
+    ],
+    "12. Checkpoint — All rendering modules": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900157751
+      }
+    ],
+    "13.1 Write mobile-first CSS layout rules": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900158062
+      }
+    ],
+    "13.2 Write desktop breakpoint CSS (≥768px)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900158291
+      }
+    ],
+    "13.3 Implement resize handler with debounce": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900158509
+      }
+    ],
+    "13.4 Write property test for debounce (Property implied by 9.4)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900158708
+      }
+    ],
+    "14.1 Implement `initApp()`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900158925
+      }
+    ],
+    "14.2 Implement `ChartRenderer.renderAll(activeMonth)`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900159122
+      }
+    ],
+    "14.3 Wire `DOMContentLoaded` event to `initApp()`": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900159372
+      }
+    ],
+    "14.4 Write property test for serialization round-trip (Property 8)": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900159592
+      }
+    ],
+    "15. Final checkpoint — Full application": [
+      {
+        "executionId": "5b5a2e22-8445-413b-848f-de101d832af7",
+        "chatSessionId": "sess_e2f2efe0-925f-40a9-8b5a-080b41002718",
+        "timestamp": 1784900159808
+      }
+    ]
+  }
+}
