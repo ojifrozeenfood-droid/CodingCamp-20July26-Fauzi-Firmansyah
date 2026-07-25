@@ -688,34 +688,33 @@ const ChartRenderer = {
     this.drawYAxis(ctx, padding, chartHeight, maxValue);
     this.drawXAxisLabels(ctx, padding, chartWidth, chartHeight, months);
 
+    // Safe rounded-top rect (works in all browsers)
+    function drawBar(ctx2, x, y, w2, h2, color) {
+      if (h2 <= 0) return;
+      const r = Math.min(3, w2 / 2, h2);
+      ctx2.fillStyle = color;
+      ctx2.beginPath();
+      ctx2.moveTo(x + r, y);
+      ctx2.lineTo(x + w2 - r, y);
+      ctx2.arcTo(x + w2, y,     x + w2, y + r,      r);
+      ctx2.lineTo(x + w2, y + h2);
+      ctx2.lineTo(x,      y + h2);
+      ctx2.arcTo(x,       y,     x + r,  y,          r);
+      ctx2.closePath();
+      ctx2.fill();
+    }
+
     data.forEach(function(d, i) {
       const xBase = padding.left + i * groupWidth + gap;
 
       // Budget bar
       const barHBudget = (d.budgeted / maxValue) * chartHeight;
-      ctx.fillStyle = COLOR_BUDGET;
-      ctx.beginPath();
-      ctx.roundRect(
-        xBase,
-        padding.top + chartHeight - barHBudget,
-        barWidth,
-        barHBudget,
-        [3, 3, 0, 0]
-      );
-      ctx.fill();
+      drawBar(ctx, xBase, padding.top + chartHeight - barHBudget, barWidth, barHBudget, COLOR_BUDGET);
 
       // Actual bar
       const barHActual = (d.actual / maxValue) * chartHeight;
-      ctx.fillStyle = d.actual > d.budgeted ? COLOR_OVER : COLOR_UNDER;
-      ctx.beginPath();
-      ctx.roundRect(
-        xBase + barWidth + gap,
-        padding.top + chartHeight - barHActual,
-        barWidth,
-        barHActual,
-        [3, 3, 0, 0]
-      );
-      ctx.fill();
+      const actualColor = d.actual > d.budgeted ? COLOR_OVER : COLOR_UNDER;
+      drawBar(ctx, xBase + barWidth + gap, padding.top + chartHeight - barHActual, barWidth, barHActual, actualColor);
     });
 
     this.drawBarLegend(ctx, canvas, padding);
