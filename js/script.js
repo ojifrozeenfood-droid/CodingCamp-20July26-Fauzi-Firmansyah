@@ -21,7 +21,16 @@ const LS_TRANSACTIONS = "ebv_transactions";
 /** LocalStorage key for the budgets array. */
 const LS_BUDGETS = "ebv_budgets";
 
-/** Ordered list of expense categories. */
+/** LocalStorage key for the custom categories array. */
+const LS_CUSTOM_CATEGORIES = "ebv_custom_categories";
+
+/** LocalStorage key for the monthly spending limit. */
+const LS_SPENDING_LIMIT = "ebv_spending_limit";
+
+/**
+ * Built-in expense categories. Mutable at runtime — custom categories
+ * are appended to this array when loaded from LocalStorage.
+ */
 const CATEGORIES = [
   "Makanan & Minuman",
   "Transportasi",
@@ -34,8 +43,25 @@ const CATEGORIES = [
 ];
 
 /**
+ * Color palette for auto-assigning colors to custom categories.
+ * Cycles when more than the pool length are added.
+ */
+const CUSTOM_CATEGORY_COLOR_POOL = [
+  "#06b6d4", // cyan
+  "#f43f5e", // rose
+  "#84cc16", // lime
+  "#f97316", // amber-orange (different shade)
+  "#8b5cf6", // violet
+  "#0ea5e9", // sky
+  "#d97706", // amber
+  "#10b981", // emerald
+  "#e879f9", // fuchsia
+  "#6366f1"  // indigo (reused for custom)
+];
+
+/**
  * Distinct hex colors assigned to each category.
- * Used consistently for pie slices, legends, and badges.
+ * Mutable: custom categories are added here at runtime.
  */
 const CATEGORY_COLORS = {
   "Makanan & Minuman":  "#f97316",  // orange
@@ -188,6 +214,87 @@ const DataStore = {
     });
     this.writeTransactions(filtered);
     return true;
+  },
+
+  /**
+   * Reads the custom categories array from LocalStorage.
+   * Returns [] if absent or unparseable.
+   * @returns {Array<{name: string, color: string}>}
+   */
+  readCustomCategories() {
+    try {
+      const raw = localStorage.getItem(LS_CUSTOM_CATEGORIES);
+      if (raw === null) return [];
+      return JSON.parse(raw);
+    } catch (err) {
+      console.error("DataStore.readCustomCategories: parse error", err);
+      return [];
+    }
+  },
+
+  /**
+   * Writes the custom categories array to LocalStorage.
+   * @param {Array<{name: string, color: string}>} arr
+   */
+  writeCustomCategories(arr) {
+    try {
+      localStorage.setItem(LS_CUSTOM_CATEGORIES, JSON.stringify(arr));
+    } catch (err) {
+      if (err instanceof DOMException) {
+        showStorageError("Data tidak dapat disimpan — penyimpanan penuh atau diblokir.");
+      } else {
+        throw err;
+      }
+    }
+  },
+
+  /**
+   * Appends a new custom category and persists it.
+   * Caller is responsible for uniqueness checking before calling this.
+   * @param {string} name
+   * @param {string} color
+   */
+  addCustomCategory(name, color) {
+    const arr = this.readCustomCategories();
+    arr.push({ name, color });
+    this.writeCustomCategories(arr);
+  },
+
+  /**
+   * Reads the monthly spending limit from LocalStorage.
+   * Returns null if not set.
+   * @returns {number|null}
+   */
+  readSpendingLimit() {
+    try {
+      const raw = localStorage.getItem(LS_SPENDING_LIMIT);
+      if (raw === null) return null;
+      const val = parseFloat(raw);
+      return isFinite(val) ? val : null;
+    } catch (err) {
+      return null;
+    }
+  },
+
+  /**
+   * Writes the monthly spending limit to LocalStorage.
+   * Pass null to clear it.
+   * @param {number|null} amount
+   */
+  writeSpendingLimit(amount) {
+    try {
+      if (amount === null) {
+        localStorage.removeItem(LS_SPENDING_LIMIT);
+      } else {
+        localStorage.setItem(LS_SPENDING_LIMIT, String(amount));
+      }
+    } catch (err) {
+      if (err instanceof DOMException) {
+        showStorageError("Data tidak dapat disimpan — penyimpanan penuh atau diblokir.");
+      } else {
+        throw err;
+      }
+    }
   }
 };
 
@@ -240,7 +347,7 @@ const Validator = {
     }
 
     // --- category ---
-    // Only validate category when type is known to be valid
+    // CATEGORIES is mutable — includes built-in and custom categories loaded at runtime
     if (type === "expense") {
       if (!CATEGORIES.includes(formData.category)) {
         errors.category = "Kategori tidak valid untuk pengeluaran.";
@@ -284,6 +391,25 @@ const Validator = {
       return { valid: false, error: "Jumlah anggaran harus berupa angka non-negatif." };
     }
 
+    return { valid: true };
+  },
+
+  /**
+   * Validates a new custom category name.
+   * @param {string} name - The proposed category name.
+   * @returns {{ valid: true } | { valid: false, error: string }}
+   */
+  validateCategory(name) {
+    if (!name || String(name).trim() === "") {
+      return { valid: false, error: "Nama kategori tidak boleh kosong." };
+    }
+    if (String(name).trim().length > 50) {
+      return { valid: false, error: "Nama kategori maksimal 50 karakter." };
+    }
+    const trimmed = String(name).trim();
+    if (CATEGORIES.includes(trimmed)) {
+      return { valid: false, error: "Kategori \"" + trimmed + "\" sudah ada." };
+    }
     return { valid: true };
   }
 
@@ -566,9 +692,12 @@ const ChartRenderer = {
 
     let startAngle = -Math.PI / 2;
 
-    for (const category of CATEGORIES) {
+    // Iterate all categories that have spend (includes custom categories)
+    const allCatsWithSpend = Object.keys(monthSummary.byCategory)
+      .filter(cat => monthSummary.byCategory[cat] > 0);
+
+    for (const category of allCatsWithSpend) {
       const amount = monthSummary.byCategory[category];
-      if (!amount || amount === 0) continue;
 
       const sliceAngle = (amount / totalExpense) * 2 * Math.PI;
       const color      = CATEGORY_COLORS[category] || "#94a3b8";
@@ -579,7 +708,7 @@ const ChartRenderer = {
       ctx.closePath();
       ctx.fillStyle   = color;
       ctx.fill();
-      ctx.strokeStyle = "#ffffff";
+      ctx.strokeStyle = "#0f172a";
       ctx.lineWidth   = 2;
       ctx.stroke();
 
@@ -601,13 +730,13 @@ const ChartRenderer = {
     const w   = canvas.width  / dpr;
     const h   = canvas.height / dpr;
 
-    // Build entries with amount > 0
-    const entries = CATEGORIES
+    // Build entries with amount > 0 — includes custom categories
+    const entries = Object.keys(monthSummary.byCategory)
       .filter(cat => monthSummary.byCategory[cat] > 0)
       .map(cat => ({
-        name:    cat,
-        color:   CATEGORY_COLORS[cat] || "#94a3b8",
-        pct:     ((monthSummary.byCategory[cat] / totalExpense) * 100).toFixed(1)
+        name:  cat,
+        color: CATEGORY_COLORS[cat] || "#94a3b8",
+        pct:   ((monthSummary.byCategory[cat] / totalExpense) * 100).toFixed(1)
       }));
 
     if (entries.length === 0) return;
@@ -785,23 +914,30 @@ const UIController = {
 
   /**
    * Populates a category <select> element based on transaction type.
+   * For "expense", includes all built-in + custom categories, plus a
+   * sentinel "Tambah Kategori Baru..." option at the bottom.
    * @param {HTMLSelectElement} selectEl
    * @param {string} type - "income" or "expense"
    */
   populateCategorySelect(selectEl, type) {
     selectEl.innerHTML = "";
     if (type === "income") {
-      const opt  = document.createElement("option");
-      opt.value  = "income";
+      const opt       = document.createElement("option");
+      opt.value       = "income";
       opt.textContent = "Pendapatan";
       selectEl.appendChild(opt);
     } else {
       CATEGORIES.forEach(function(cat) {
-        const opt  = document.createElement("option");
-        opt.value  = cat;
+        const opt       = document.createElement("option");
+        opt.value       = cat;
         opt.textContent = cat;
         selectEl.appendChild(opt);
       });
+      // Sentinel option
+      const sentinel       = document.createElement("option");
+      sentinel.value       = "__add_new__";
+      sentinel.textContent = "➕ Tambah Kategori Baru...";
+      selectEl.appendChild(sentinel);
     }
   },
 
@@ -840,18 +976,32 @@ const UIController = {
   },
 
   /**
-   * Renders the transaction list for the given month.
+   * Renders the transaction list for the given month, applying the chosen sort order.
    * @param {HTMLElement} container
    * @param {Array} transactions
    * @param {string} monthKey
+   * @param {string} [sortOrder="date-desc"] - "date-desc" | "amount-desc" | "amount-asc" | "category-az"
    */
-  renderTransactionList(container, transactions, monthKey) {
+  renderTransactionList(container, transactions, monthKey, sortOrder) {
     const filtered = Aggregation.getTransactionsForMonth(transactions, monthKey);
+    const order = sortOrder || "date-desc";
 
-    // Sort by date descending, then by createdAt descending for same-day stability
     filtered.sort(function(a, b) {
-      if (b.date !== a.date) return b.date.localeCompare(a.date);
-      return (b.createdAt || 0) - (a.createdAt || 0);
+      switch (order) {
+        case "amount-desc":
+          return b.amount - a.amount;
+        case "amount-asc":
+          return a.amount - b.amount;
+        case "category-az": {
+          const catA = (a.type === "income" ? "Pendapatan" : a.category) || "";
+          const catB = (b.type === "income" ? "Pendapatan" : b.category) || "";
+          return catA.localeCompare(catB, "id");
+        }
+        case "date-desc":
+        default:
+          if (b.date !== a.date) return b.date.localeCompare(a.date);
+          return (b.createdAt || 0) - (a.createdAt || 0);
+      }
     });
 
     if (filtered.length === 0) {
@@ -1018,6 +1168,49 @@ const UIController = {
   },
 
   /**
+   * Updates the spending-limit banner below the limit input.
+   * Shows a red warning if totalExpense >= limit, a progress bar otherwise.
+   * Hides the banner entirely when no limit is set.
+   * @param {number|null} limit - The spending limit (or null if unset).
+   * @param {number} totalExpense - Total expense for the active month.
+   */
+  renderSpendingLimitBanner(limit, totalExpense) {
+    const banner = document.getElementById("spendingLimitBanner");
+    if (!banner) return;
+
+    if (limit === null || limit <= 0) {
+      banner.style.display = "none";
+      banner.className = "spending-limit-banner";
+      return;
+    }
+
+    const pct     = Math.min((totalExpense / limit) * 100, 100);
+    const over    = totalExpense >= limit;
+    const caution = pct >= 80;
+
+    let colorClass = over ? "banner--danger" : caution ? "banner--caution" : "banner--safe";
+    let gradStyle  = over
+      ? "background:linear-gradient(90deg,#ef4444,#f87171);"
+      : caution
+        ? "background:linear-gradient(90deg,#f59e0b,#fbbf24);"
+        : "background:linear-gradient(90deg,#22c55e,#4ade80);";
+
+    const expenseStr = "Rp\u00a0" + Math.round(totalExpense).toLocaleString("id-ID");
+    const limitStr   = "Rp\u00a0" + Math.round(limit).toLocaleString("id-ID");
+
+    banner.className = "spending-limit-banner " + colorClass;
+    banner.style.display = "block";
+    banner.innerHTML =
+      (over
+        ? '<span class="banner-icon">⚠️</span> <strong>Batas terlampaui!</strong> '
+        : '<span class="banner-icon">📊</span> ') +
+      expenseStr + " dari " + limitStr +
+      '<div class="banner-track">' +
+        '<div class="banner-fill" style="width:' + pct + '%;' + gradStyle + '"></div>' +
+      '</div>';
+  },
+
+  /**
    * Convenience wrapper: populates the #txCategory select by type.
    * @param {string} type - "income" or "expense"
    */
@@ -1032,110 +1225,270 @@ const UIController = {
    SECTION 7: Init
    ============================================================ */
 
-// App state
+// ── App state ─────────────────────────────────────────────
 let AppState = {
-  transactions: [],
-  budgets: [],
-  activeMonth: ''
+  transactions:  [],
+  budgets:       [],
+  activeMonth:   "",
+  sortOrder:     "date-desc",   // current sort selection
+  spendingLimit: null           // monthly spending limit (number | null)
 };
 
+// ── Helpers ───────────────────────────────────────────────
 function getCurrentMonthKey() {
   const now = new Date();
-  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
 }
 
-// Indonesian month names
-const ID_MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const ID_MONTHS = [
+  "Januari","Februari","Maret","April","Mei","Juni",
+  "Juli","Agustus","September","Oktober","November","Desember"
+];
 
 function formatMonthLabel(monthKey) {
-  const [y, m] = monthKey.split('-');
-  return ID_MONTHS[parseInt(m, 10) - 1] + ' ' + y;
+  const [y, m] = monthKey.split("-");
+  return ID_MONTHS[parseInt(m, 10) - 1] + " " + y;
 }
 
 function formatCurrency(amount) {
-  return 'Rp\u00a0' + Math.round(amount).toLocaleString('id-ID');
+  return "Rp\u00a0" + Math.round(amount).toLocaleString("id-ID");
 }
 
+/**
+ * Loads custom categories from LocalStorage and merges them into the
+ * live CATEGORIES array and CATEGORY_COLORS map (idempotent — skips
+ * names already present).
+ */
+function loadCustomCategories() {
+  const customs = DataStore.readCustomCategories();
+  customs.forEach(function(c) {
+    if (!CATEGORIES.includes(c.name)) {
+      CATEGORIES.push(c.name);
+      CATEGORY_COLORS[c.name] = c.color;
+    }
+  });
+}
+
+/**
+ * Full re-render: transaction list, budget panel, charts, and limit banner.
+ */
+function renderAll() {
+  const txListContainer = document.getElementById("transactionListContainer");
+  const budgetContainer = document.getElementById("budgetPanelContainer");
+  const summary         = Aggregation.aggregateMonth(AppState.transactions, AppState.activeMonth);
+
+  UIController.renderTransactionList(
+    txListContainer,
+    AppState.transactions,
+    AppState.activeMonth,
+    AppState.sortOrder
+  );
+  UIController.renderBudgetPanel(budgetContainer, AppState.budgets, AppState.activeMonth);
+  UIController.renderSpendingLimitBanner(AppState.spendingLimit, summary.totalExpense);
+  ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+}
+
+// ── initApp ───────────────────────────────────────────────
 function initApp() {
-  AppState.transactions = DataStore.readTransactions();
-  AppState.budgets      = DataStore.readBudgets();
-  AppState.activeMonth  = getCurrentMonthKey();
+  // 1. Load persisted state
+  loadCustomCategories();
+  AppState.transactions  = DataStore.readTransactions();
+  AppState.budgets       = DataStore.readBudgets();
+  AppState.activeMonth   = getCurrentMonthKey();
+  AppState.spendingLimit = DataStore.readSpendingLimit();
 
-  const monthSelect      = document.getElementById('monthSelect');
-  const categorySelect   = document.getElementById('txCategory');
-  const typeSelect       = document.getElementById('txType');
-  const form             = document.getElementById('transactionForm');
-  const txListContainer  = document.getElementById('transactionListContainer');
-  const budgetContainer  = document.getElementById('budgetPanelContainer');
-  const monthLabel       = document.querySelector('.active-month-label');
+  // 2. Grab DOM elements
+  const monthSelect         = document.getElementById("monthSelect");
+  const categorySelect      = document.getElementById("txCategory");
+  const typeSelect          = document.getElementById("txType");
+  const form                = document.getElementById("transactionForm");
+  const txListContainer     = document.getElementById("transactionListContainer");
+  const budgetContainer     = document.getElementById("budgetPanelContainer");
+  const monthLabel          = document.querySelector(".active-month-label");
+  const sortSelect          = document.getElementById("sortSelect");
+  const customCategoryRow   = document.getElementById("customCategoryRow");
+  const newCategoryInput    = document.getElementById("txNewCategory");
+  const btnAddCategory      = document.getElementById("btnAddCategory");
+  const newCategoryErrEl    = document.getElementById("errorNewCategory");
+  const spendingLimitInput  = document.getElementById("spendingLimitInput");
+  const spendingLimitErrEl  = document.getElementById("errorSpendingLimit");
 
-  // Populate selects
+  // 3. Populate selects
   UIController.populateMonthFilter(monthSelect, AppState.transactions);
-  UIController.populateCategorySelect(categorySelect, 'expense');
-
-  // Set active month in filter to current
+  UIController.populateCategorySelect(categorySelect, "expense");
   monthSelect.value = AppState.activeMonth;
-
-  // Update header month label
   if (monthLabel) monthLabel.textContent = formatMonthLabel(AppState.activeMonth);
 
-  // Render lists and panels
-  UIController.renderTransactionList(txListContainer, AppState.transactions, AppState.activeMonth);
-  UIController.renderBudgetPanel(budgetContainer, AppState.budgets, AppState.activeMonth);
-
-  // Set today's date as default in date picker
-  const dateInput = document.getElementById('txDate');
-  if (dateInput) {
-    const today = new Date();
-    dateInput.value = today.toISOString().slice(0, 10);
+  // 4. Restore spending-limit input value
+  if (spendingLimitInput && AppState.spendingLimit !== null) {
+    spendingLimitInput.value = AppState.spendingLimit;
   }
 
-  // Render charts
-  ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+  // 5. Default date
+  const dateInput = document.getElementById("txDate");
+  if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
 
-  // --- Event: type select changes category options ---
-  typeSelect.addEventListener('change', function() {
+  // 6. Initial render
+  renderAll();
+
+  // ── EVENT: type select → refresh category options ─────
+  typeSelect.addEventListener("change", function() {
     UIController.populateCategorySelect(categorySelect, this.value);
+    // Hide custom input if type switches to income
+    if (customCategoryRow) customCategoryRow.style.display = "none";
   });
 
-  // --- Event: month filter ---
-  monthSelect.addEventListener('change', function() {
+  // ── EVENT: category select → show/hide custom input ──
+  categorySelect.addEventListener("change", function() {
+    if (!customCategoryRow) return;
+    if (this.value === "__add_new__") {
+      customCategoryRow.style.display = "block";
+      if (newCategoryInput) newCategoryInput.focus();
+    } else {
+      customCategoryRow.style.display = "none";
+      if (newCategoryErrEl) newCategoryErrEl.textContent = "";
+    }
+  });
+
+  // ── EVENT: save custom category ───────────────────────
+  function saveCustomCategory() {
+    if (!newCategoryInput) return;
+    const name = newCategoryInput.value.trim();
+    const result = Validator.validateCategory(name);
+
+    if (!result.valid) {
+      if (newCategoryErrEl) newCategoryErrEl.textContent = result.error;
+      newCategoryInput.classList.add("is-invalid");
+      return;
+    }
+
+    // Assign a color from the pool (cycle if needed)
+    const customCount = DataStore.readCustomCategories().length;
+    const color = CUSTOM_CATEGORY_COLOR_POOL[customCount % CUSTOM_CATEGORY_COLOR_POOL.length];
+
+    // Persist + add to live arrays
+    DataStore.addCustomCategory(name, color);
+    CATEGORIES.push(name);
+    CATEGORY_COLORS[name] = color;
+
+    // Clear error + input
+    if (newCategoryErrEl) newCategoryErrEl.textContent = "";
+    newCategoryInput.classList.remove("is-invalid");
+    newCategoryInput.value = "";
+
+    // Rebuild category select with new option pre-selected
+    UIController.populateCategorySelect(categorySelect, "expense");
+    categorySelect.value = name;
+
+    // Hide the input row
+    if (customCategoryRow) customCategoryRow.style.display = "none";
+  }
+
+  if (btnAddCategory) {
+    btnAddCategory.addEventListener("click", saveCustomCategory);
+  }
+  if (newCategoryInput) {
+    newCategoryInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") { e.preventDefault(); saveCustomCategory(); }
+      if (e.key === "Escape") {
+        customCategoryRow.style.display = "none";
+        categorySelect.value = CATEGORIES[0];
+      }
+    });
+  }
+
+  // ── EVENT: month filter ────────────────────────────────
+  monthSelect.addEventListener("change", function() {
     AppState.activeMonth = this.value;
     if (monthLabel) monthLabel.textContent = formatMonthLabel(AppState.activeMonth);
-    UIController.renderTransactionList(txListContainer, AppState.transactions, AppState.activeMonth);
-    UIController.renderBudgetPanel(budgetContainer, AppState.budgets, AppState.activeMonth);
-    ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+    renderAll();
   });
 
-  // --- Event: form submit ---
-  form.addEventListener('submit', function(e) {
+  // ── EVENT: sort dropdown ──────────────────────────────
+  if (sortSelect) {
+    sortSelect.addEventListener("change", function() {
+      AppState.sortOrder = this.value;
+      UIController.renderTransactionList(
+        txListContainer,
+        AppState.transactions,
+        AppState.activeMonth,
+        AppState.sortOrder
+      );
+    });
+  }
+
+  // ── EVENT: spending limit input ───────────────────────
+  if (spendingLimitInput) {
+    spendingLimitInput.addEventListener("change", function() {
+      const raw = this.value.trim();
+
+      if (raw === "") {
+        // Clear limit
+        AppState.spendingLimit = null;
+        DataStore.writeSpendingLimit(null);
+        if (spendingLimitErrEl) spendingLimitErrEl.textContent = "";
+        this.classList.remove("is-invalid");
+        UIController.renderSpendingLimitBanner(
+          null,
+          Aggregation.aggregateMonth(AppState.transactions, AppState.activeMonth).totalExpense
+        );
+        return;
+      }
+
+      const result = Validator.validateBudget(raw);
+      if (!result.valid) {
+        if (spendingLimitErrEl) spendingLimitErrEl.textContent = result.error;
+        this.classList.add("is-invalid");
+        return;
+      }
+
+      if (spendingLimitErrEl) spendingLimitErrEl.textContent = "";
+      this.classList.remove("is-invalid");
+
+      AppState.spendingLimit = parseFloat(raw);
+      DataStore.writeSpendingLimit(AppState.spendingLimit);
+      UIController.renderSpendingLimitBanner(
+        AppState.spendingLimit,
+        Aggregation.aggregateMonth(AppState.transactions, AppState.activeMonth).totalExpense
+      );
+    });
+  }
+
+  // ── EVENT: form submit ────────────────────────────────
+  form.addEventListener("submit", function(e) {
     e.preventDefault();
+
+    // Guard: if "__add_new__" is still selected, block submission
+    if (categorySelect.value === "__add_new__") {
+      if (newCategoryErrEl) newCategoryErrEl.textContent = "Simpan kategori baru terlebih dahulu.";
+      if (customCategoryRow) customCategoryRow.style.display = "block";
+      if (newCategoryInput) newCategoryInput.focus();
+      return;
+    }
+
     const formData = {
-      description: document.getElementById('txDescription').value,
-      amount:      parseFloat(document.getElementById('txAmount').value),
-      type:        document.getElementById('txType').value,
-      category:    document.getElementById('txCategory').value,
-      date:        document.getElementById('txDate').value
+      description: document.getElementById("txDescription").value,
+      amount:      parseFloat(document.getElementById("txAmount").value),
+      type:        typeSelect.value,
+      category:    categorySelect.value,
+      date:        dateInput ? dateInput.value : ""
     };
 
     const result = Validator.validateTransaction(formData);
     if (!result.valid) {
-      // Show inline errors
-      const fields = ['description', 'amount', 'type', 'category', 'date'];
-      fields.forEach(function(f) {
-        const errEl   = document.getElementById('error' + f.charAt(0).toUpperCase() + f.slice(1));
-        const inputEl = document.querySelector('[name="' + f + '"]');
-        if (errEl)   errEl.textContent = result.errors[f] || '';
-        if (inputEl) inputEl.classList.toggle('is-invalid', !!result.errors[f]);
+      ["description", "amount", "type", "category", "date"].forEach(function(f) {
+        const errEl   = document.getElementById("error" + f.charAt(0).toUpperCase() + f.slice(1));
+        const inputEl = document.querySelector("[name=\"" + f + "\"]");
+        if (errEl)   errEl.textContent = result.errors[f] || "";
+        if (inputEl) inputEl.classList.toggle("is-invalid", !!result.errors[f]);
       });
       return;
     }
 
-    // Build transaction object
     const tx = {
       id:          generateUUID(),
       type:        formData.type,
-      category:    formData.type === 'income' ? 'income' : formData.category,
+      category:    formData.type === "income" ? "income" : formData.category,
       description: formData.description,
       amount:      formData.amount,
       date:        formData.date,
@@ -1148,14 +1501,15 @@ function initApp() {
     UIController.populateMonthFilter(monthSelect, AppState.transactions);
     monthSelect.value = AppState.activeMonth;
     UIController.clearTransactionForm(form);
-    UIController.renderTransactionList(txListContainer, AppState.transactions, AppState.activeMonth);
-    UIController.renderBudgetPanel(budgetContainer, AppState.budgets, AppState.activeMonth);
-    ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+    // Re-apply the date default after form reset
+    if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
+
+    renderAll();
   });
 
-  // --- Event: delete transaction (event delegation) ---
-  txListContainer.addEventListener('click', function(e) {
-    const btn = e.target.closest('[data-action="delete"]');
+  // ── EVENT: delete transaction (delegation) ────────────
+  txListContainer.addEventListener("click", function(e) {
+    const btn = e.target.closest("[data-action=\"delete\"]");
     if (!btn) return;
     const id = btn.dataset.id;
     if (!id) return;
@@ -1163,23 +1517,22 @@ function initApp() {
     AppState.transactions = DataStore.readTransactions();
     UIController.populateMonthFilter(monthSelect, AppState.transactions);
     monthSelect.value = AppState.activeMonth;
-    UIController.renderTransactionList(txListContainer, AppState.transactions, AppState.activeMonth);
-    ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+    renderAll();
   });
 
-  // --- Event: resize with debounce ---
+  // ── EVENT: resize with debounce ───────────────────────
   function debounce(fn, delay) {
     let timer;
     return function() {
       clearTimeout(timer);
       const args = arguments;
-      const ctx  = this;
-      timer = setTimeout(function() { fn.apply(ctx, args); }, delay);
+      const self = this;
+      timer = setTimeout(function() { fn.apply(self, args); }, delay);
     };
   }
-  window.addEventListener('resize', debounce(function() {
+  window.addEventListener("resize", debounce(function() {
     ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
   }, 150));
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener("DOMContentLoaded", initApp);

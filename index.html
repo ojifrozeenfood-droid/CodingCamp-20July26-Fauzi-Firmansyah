@@ -66,6 +66,22 @@
             <span class="field-error" id="errorCategory"></span>
           </div>
 
+          <!-- Custom category input — shown only when "Tambah Kategori Baru..." is selected -->
+          <div class="form-group custom-category-row" id="customCategoryRow" style="display:none">
+            <label for="txNewCategory">Nama Kategori Baru</label>
+            <div class="custom-category-input-group">
+              <input
+                type="text"
+                id="txNewCategory"
+                placeholder="Contoh: Olahraga"
+                maxlength="50"
+                autocomplete="off"
+              />
+              <button type="button" class="btn btn-save-sm" id="btnAddCategory">Simpan</button>
+            </div>
+            <span class="field-error" id="errorNewCategory"></span>
+          </div>
+
           <div class="form-group">
             <label for="txDate">Tanggal</label>
             <input type="date" id="txDate" name="date" />
@@ -85,9 +101,38 @@
         </select>
       </div>
 
+      <!-- Spending Limit Panel -->
+      <div class="spending-limit-panel">
+        <h2 class="panel-heading">Batas Pengeluaran Bulanan</h2>
+        <div class="spending-limit-input-row">
+          <span class="filter-label">Rp</span>
+          <input
+            type="number"
+            id="spendingLimitInput"
+            class="budget-input spending-limit-input"
+            min="0"
+            step="any"
+            placeholder="Belum diatur"
+            aria-label="Batas pengeluaran bulanan"
+          />
+        </div>
+        <span class="field-error" id="errorSpendingLimit"></span>
+        <!-- Warning banner — shown when total expense exceeds limit -->
+        <div id="spendingLimitBanner" class="spending-limit-banner" style="display:none" role="alert" aria-live="polite"></div>
+      </div>
+
       <!-- Transaction List -->
       <div class="transaction-list">
-        <h2 class="panel-heading">Daftar Transaksi</h2>
+        <div class="transaction-list-header">
+          <h2 class="panel-heading">Daftar Transaksi</h2>
+          <!-- Sort control -->
+          <select id="sortSelect" class="sort-select" aria-label="Urutan transaksi">
+            <option value="date-desc">Terbaru</option>
+            <option value="amount-desc">Jumlah Tertinggi</option>
+            <option value="amount-asc">Jumlah Terendah</option>
+            <option value="category-az">Kategori A–Z</option>
+          </select>
+        </div>
         <div id="transactionListContainer" class="transaction-list-container">
           <!-- Populated by UIController.renderTransactionList() -->
         </div>

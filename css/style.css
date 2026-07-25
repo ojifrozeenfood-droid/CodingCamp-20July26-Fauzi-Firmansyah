@@ -708,3 +708,218 @@ canvas {
 .text-expense {
   color: var(--color-expense);
 }
+
+/* ============================================================
+   Optional Challenges — Custom Categories, Sort, Spending Limit
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Transaction List Header (heading + sort dropdown side-by-side)
+   ------------------------------------------------------------ */
+.transaction-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.transaction-list-header .panel-heading {
+  margin-bottom: 0;
+}
+
+.sort-select {
+  min-height: 36px;
+  padding: 4px 28px 4px var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: #0f172a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  flex-shrink: 0;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-glow);
+  color: var(--color-text);
+}
+
+/* ------------------------------------------------------------
+   Custom Category Input Row
+   ------------------------------------------------------------ */
+.custom-category-row {
+  animation: slideDown 180ms ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.custom-category-input-group {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: stretch;
+}
+
+.custom-category-input-group input {
+  flex: 1;
+  min-height: var(--touch-target);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: #0f172a;
+  color: var(--color-text);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.custom-category-input-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-glow);
+}
+
+.custom-category-input-group input.is-invalid {
+  border-color: var(--color-expense);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+}
+
+.btn-save-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  min-height: var(--touch-target);
+  min-width: 68px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.btn-save-sm:hover {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-save-sm:active {
+  transform: translateY(0);
+}
+
+/* ------------------------------------------------------------
+   Spending Limit Panel
+   ------------------------------------------------------------ */
+.spending-limit-panel {
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  width: 100%;
+  box-shadow: 0 4px 24px var(--color-shadow), 0 1px 0 rgba(255,255,255,0.05) inset;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.spending-limit-panel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px var(--color-shadow), 0 1px 0 rgba(255,255,255,0.05) inset;
+}
+
+.spending-limit-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+/* "Rp" label inside the row */
+.spending-limit-input-row .filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.spending-limit-input {
+  flex: 1;
+  min-height: 40px;
+}
+
+/* ------------------------------------------------------------
+   Spending Limit Banner
+   ------------------------------------------------------------ */
+.spending-limit-banner {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border: 1px solid transparent;
+  line-height: 1.5;
+}
+
+.spending-limit-banner .banner-icon {
+  margin-right: 4px;
+}
+
+/* Safe — under 80 % */
+.banner--safe {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #34d399;
+}
+
+/* Caution — 80–99 % */
+.banner--caution {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+/* Danger — 100 %+ */
+.banner--danger {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: var(--color-expense);
+  animation: pulse-border 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2); }
+}
+
+/* Mini progress track inside the banner */
+.banner-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.banner-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
