@@ -1056,7 +1056,10 @@ const UIController = {
     });
     // Hide the custom category input row if it was open
     const customRow = document.getElementById("customCategoryRow");
-    if (customRow) customRow.style.display = "none";
+    if (customRow) {
+      customRow.style.display = "none";
+      customRow.classList.remove("is-visible");
+    }
     // Re-focus description
     const descInput = form.querySelector('[name="description"]');
     if (descInput) descInput.focus();
@@ -1337,8 +1340,11 @@ function initApp() {
   // ── EVENT: type select → refresh category options ─────
   typeSelect.addEventListener("change", function() {
     UIController.populateCategorySelect(categorySelect, this.value);
-    // Hide custom input if type switches to income
-    if (customCategoryRow) customCategoryRow.style.display = "none";
+    // Hide custom input if type switches to income or expense
+    if (customCategoryRow) {
+      customCategoryRow.style.display = "none";
+      customCategoryRow.classList.remove("is-visible");
+    }
   });
 
   // ── EVENT: category select → show/hide custom input ──
@@ -1346,9 +1352,11 @@ function initApp() {
     if (!customCategoryRow) return;
     if (this.value === "__add_new__") {
       customCategoryRow.style.display = "block";
+      customCategoryRow.classList.add("is-visible");
       if (newCategoryInput) newCategoryInput.focus();
     } else {
       customCategoryRow.style.display = "none";
+      customCategoryRow.classList.remove("is-visible");
       if (newCategoryErrEl) newCategoryErrEl.textContent = "";
     }
   });
@@ -1384,7 +1392,10 @@ function initApp() {
     categorySelect.value = name;
 
     // Hide the input row
-    if (customCategoryRow) customCategoryRow.style.display = "none";
+    if (customCategoryRow) {
+      customCategoryRow.style.display = "none";
+      customCategoryRow.classList.remove("is-visible");
+    }
 
     // Re-render everything so budget panel & charts reflect the new category
     renderAll();
@@ -1398,7 +1409,11 @@ function initApp() {
       if (e.key === "Enter") { e.preventDefault(); saveCustomCategory(); }
       if (e.key === "Escape") {
         customCategoryRow.style.display = "none";
-        categorySelect.value = CATEGORIES[0];
+        customCategoryRow.classList.remove("is-visible");
+        // Revert select back to first real category (not sentinel)
+        const firstReal = Array.from(categorySelect.options)
+          .find(o => o.value !== "__add_new__");
+        if (firstReal) categorySelect.value = firstReal.value;
       }
     });
   }
@@ -1538,7 +1553,7 @@ function initApp() {
     };
   }
   window.addEventListener("resize", debounce(function() {
-    ChartRenderer.renderAll(AppState.transactions, AppState.budgets, AppState.activeMonth);
+    renderAll();
   }, 150));
 }
 

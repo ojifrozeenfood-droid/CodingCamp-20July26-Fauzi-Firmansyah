@@ -758,6 +758,10 @@ canvas {
    Custom Category Input Row
    ------------------------------------------------------------ */
 .custom-category-row {
+  /* animation only applied when .is-visible is added via JS */
+}
+
+.custom-category-row.is-visible {
   animation: slideDown 180ms ease;
 }
 
